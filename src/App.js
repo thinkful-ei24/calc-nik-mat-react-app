@@ -29,41 +29,44 @@ export default class Calculator extends React.Component {
 	}
 
 	masterOperatorReader() {
-		const firstNum = this.state.workingPhrase[0];
-		const secondNum = this.state.workingNumber;
-
 		let total = 0;
 		let lastOperation;
 
-		if (this.state.workingPhrase[1] === "add") {
-			for (let item of this.state.workingPhrase) {
-				if (typeof item === "number" && !lastOperation) {
-					total = item;
-				}
+		for (let item of this.state.workingPhrase) {
+			if (typeof item === "number" && !lastOperation) {
+				total = item;
+			}
 
-				if (typeof item === "number" && lastOperation === "add") {
-					total += item;
-				}
-
-				if (item === "add") {
-					lastOperation = "add";
+			if (typeof item === "number" && lastOperation) {
+				switch (lastOperation) {
+					case "add": {
+						total += item;
+						break;
+					}
+					case "subtract": {
+						total -= item;
+						break;
+					}
+					case "multiply": {
+						total *= item;
+						break;
+					}
+					case "divide": {
+						total /= item;
+						break;
+					}
+					default: {
+						break;
+					}
 				}
 			}
-			this.setState({ workingNumber: total });
-			console.log(total);
+
+			if (typeof item !== "number") {
+				lastOperation = item;
+			}
 		}
-		if (this.state.workingPhrase[1] === "subtract") {
-			this.setState({ workingNumber: firstNum - secondNum });
-			console.log(firstNum - secondNum);
-		}
-		if (this.state.workingPhrase[1] === "multiply") {
-			this.setState({ workingNumber: firstNum * secondNum });
-			console.log(firstNum * secondNum);
-		}
-		if (this.state.workingPhrase[1] === "divide") {
-			this.setState({ workingNumber: firstNum / secondNum });
-			console.log(firstNum / secondNum);
-		}
+		this.setState({ workingNumber: total });
+		console.log(total);
 	}
 
 	render() {
@@ -164,7 +167,16 @@ export default class Calculator extends React.Component {
 					btnNum={0}
 				/>
 				<PeriodButton />
-				<EqualButton handleMasterClick={() => this.masterOperatorReader()} />
+				<EqualButton handleMasterClick={() => {
+						this.setState({
+								workingPhrase: [
+									...this.state.workingPhrase,
+									this.state.workingNumber
+								]
+							}, () => this.masterOperatorReader())
+					}
+				}
+					 />
 				<FunctionalButton
 					addStore={() => {
 						this.setState({
