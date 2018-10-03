@@ -32,9 +32,25 @@ export default class Calculator extends React.Component {
 		const firstNum = this.state.workingPhrase[0];
 		const secondNum = this.state.workingNumber;
 
+		let total = 0;
+		let lastOperation;
+
 		if (this.state.workingPhrase[1] === "add") {
-			this.setState({ workingNumber: firstNum + secondNum });
-			console.log(firstNum + secondNum);
+			for (let item of this.state.workingPhrase) {
+				if (typeof item === "number" && !lastOperation) {
+					total = item;
+				}
+
+				if (typeof item === "number" && lastOperation === "add") {
+					total += item;
+				}
+
+				if (item === "add") {
+					lastOperation = "add";
+				}
+			}
+			this.setState({ workingNumber: total });
+			console.log(total);
 		}
 		if (this.state.workingPhrase[1] === "subtract") {
 			this.setState({ workingNumber: firstNum - secondNum });
@@ -74,7 +90,11 @@ export default class Calculator extends React.Component {
 				<FunctionalButton
 					addStore={() => {
 						this.setState({
-							workingPhrase: [this.state.workingNumber, "divide"]
+							workingPhrase: [
+								...this.state.workingPhrase,
+								this.state.workingNumber,
+								"divide"
+							]
 						});
 						this.setState({ workingNumber: null });
 					}}
@@ -147,7 +167,13 @@ export default class Calculator extends React.Component {
 				<EqualButton handleMasterClick={() => this.masterOperatorReader()} />
 				<FunctionalButton
 					addStore={() => {
-						this.setState({ workingPhrase: [this.state.workingNumber, "add"] });
+						this.setState({
+							workingPhrase: [
+								...this.state.workingPhrase,
+								this.state.workingNumber,
+								"add"
+							]
+						});
 						this.setState({ workingNumber: null });
 					}}
 					funcType={"+"}
