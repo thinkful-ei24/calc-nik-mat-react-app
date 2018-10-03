@@ -1,16 +1,22 @@
+//TODO: Fix: 2 + 3 + 4 =...then hitting *2. (2 Plus 3 Plus 4 Equal '9' then hit * 2)
+//TODO: Get decimal working using decimalClicked
+
 import React, { Component } from "react";
 import NumberButton from "./numberButton";
 import ClearButton from "./clearButton";
 import PeriodButton from "./periodButton";
 import FunctionalButton from "./functionalButton";
 import EqualButton from "./equalButton";
+import Output from './output.js';
+import './App.css';
+
 
 export default class Calculator extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			numbersInMemory: [],
-			calculatingState: false,
+			decimalClicked: false,
 			workingNumber: null,
 			workingPhrase: []
 		};
@@ -22,11 +28,12 @@ export default class Calculator extends React.Component {
 		} else {
 			let stringWork = this.state.workingNumber.toString();
 			let stringValNum = num.toString();
-			this.setState({
-				workingNumber: Number(stringWork.concat(stringValNum))
-			});
+				this.setState({
+					workingNumber: Number(stringWork.concat(stringValNum))
+				});
+			} 			
 		}
-	}
+	
 
 	masterOperatorReader() {
 		let total = 0;
@@ -39,19 +46,19 @@ export default class Calculator extends React.Component {
 
 			if (typeof item === "number" && lastOperation) {
 				switch (lastOperation) {
-					case "add": {
+					case "+": {
 						total += item;
 						break;
 					}
-					case "subtract": {
+					case "-": {
 						total -= item;
 						break;
 					}
-					case "multiply": {
+					case "*": {
 						total *= item;
 						break;
 					}
-					case "divide": {
+					case "/": {
 						total /= item;
 						break;
 					}
@@ -71,7 +78,10 @@ export default class Calculator extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<div className='mainCalculator'>
+				<Output 
+					outputPhrase={this.state.workingPhrase}
+					outputNumber={this.state.workingNumber}/>
 				<NumberButton
 					handleClick={num => {
 						this.numberButtonClick(num);
@@ -96,8 +106,9 @@ export default class Calculator extends React.Component {
 							workingPhrase: [
 								...this.state.workingPhrase,
 								this.state.workingNumber,
-								"divide"
-							]
+								"/"
+							],
+								decimalClicked: false
 						});
 						this.setState({ workingNumber: null });
 					}}
@@ -125,7 +136,10 @@ export default class Calculator extends React.Component {
 				<FunctionalButton
 					addStore={() => {
 						this.setState({
-							workingPhrase: [this.state.workingNumber, "multiply"]
+							workingPhrase: [
+								...this.state.workingPhrase,
+								this.state.workingNumber, "*"],
+								decimalClicked: false
 						});
 						this.setState({ workingNumber: null });
 					}}
@@ -153,7 +167,10 @@ export default class Calculator extends React.Component {
 				<FunctionalButton
 					addStore={() => {
 						this.setState({
-							workingPhrase: [this.state.workingNumber, "subtract"]
+							workingPhrase: [
+								...this.state.workingPhrase,
+								this.state.workingNumber, "-"],
+								decimalClicked: false
 						});
 						this.setState({ workingNumber: null });
 					}}
@@ -166,13 +183,22 @@ export default class Calculator extends React.Component {
 					}}
 					btnNum={0}
 				/>
-				<PeriodButton />
+				<PeriodButton 
+					decimalClick={this.state.decimalClicked}
+					handleClick={val => {
+						this.numberButtonClick(val)
+						this.setState({
+							decimalClicked: true
+						})
+					}}
+					/>
 				<EqualButton handleMasterClick={() => {
 						this.setState({
 								workingPhrase: [
 									...this.state.workingPhrase,
 									this.state.workingNumber
-								]
+								],
+								decimalClicked: false
 							}, () => this.masterOperatorReader())
 					}
 				}
@@ -183,14 +209,21 @@ export default class Calculator extends React.Component {
 							workingPhrase: [
 								...this.state.workingPhrase,
 								this.state.workingNumber,
-								"add"
-							]
+								"+"
+							],
+								decimalClicked: false
 						});
 						this.setState({ workingNumber: null });
 					}}
 					funcType={"+"}
 				/>
-				<ClearButton />
+				<ClearButton onClear={() => {
+					this.setState({
+						workingNumber: null,
+						workingPhrase: []
+					})
+					}
+				}/>
 			</div>
 		);
 	}

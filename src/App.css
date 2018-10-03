@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+
+.mainCalculator {
+  border: 2px solid black;
+  width: 110px;
+  padding: 5px;
+  font-family: 'Orbitron', sans-serif;
+  border-radius: 5px;
+
+}

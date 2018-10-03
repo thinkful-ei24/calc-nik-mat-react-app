@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
-export default function ClearButton() {
+export default function ClearButton(props) {
 	return (
 		<div>
-			<button>C</button>
+			<button onClick={() => props.onClear()}>C</button>
 		</div>
 	);
 }
